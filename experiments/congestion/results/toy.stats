@@ -1,0 +1,41 @@
+APPROX P(query|evidence) = 0.765007
+Problem path length was 5
+Number of cnf constraints was 0
+Size of theory was 146
+Problem size was 56
+Elapsed time was 26.6350800991
+--
+EXACT P(query|evidence) = 0.765007
+Problem path length was 5
+Number of cnf constraints was 0
+Size of theory was 158
+Problem size was 56
+Elapsed time was 11.0816631317
+--
+APPROX P(query|evidence) = 0.769721
+Problem path length was 5
+Number of cnf constraints was 1
+Size of theory was 152
+Problem size was 62
+Elapsed time was 13.1705369949
+--
+EXACT P(query|evidence) = 0.769721
+Problem path length was 5
+Number of cnf constraints was 1
+Size of theory was 158
+Problem size was 62
+Elapsed time was 5.73233795166
+--
+APPROX P(query|evidence) = 0.556809
+Problem path length was 5
+Number of cnf constraints was 2
+Size of theory was 154
+Problem size was 62
+Elapsed time was 9.88447117805
+--
+EXACT P(query|evidence) = 0.556809
+Problem path length was 5
+Number of cnf constraints was 2
+Size of theory was 155
+Problem size was 62
+Elapsed time was 1.81368803978

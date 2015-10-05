@@ -1,0 +1,14 @@
+Highways Agency network journey time and traffic flow data
+http://data.gov.uk/dataset/dft-eng-srn-routes-journey-times
+
+This data series provides average journey time, speed and traffic flow information for 15-minute periods since April 2009 on all morotways and 'A' roads managed by the Highways Agency, known as the Strategic Road Network, in England.
+
+Journey times and speeds are estimated using a combination of sources, including Automatic Number Plate Recognition (ANPR) cameras, in-vehicle Global Positioning Systems (GPS) and inductive loops built into the road surface.
+
+Please note that journey times are derived from real vehicle observations and imputed using adjacent time periods or the same time period on different days. Further information is available in 'Field Descriptions' at the bottom of this page.
+
+
+ANDREA'S NOTES:
+
+- 15 minute time periods: 4 time periods per hour -> 4*24 = 96 time periods (from 0 to 95)
+- I guess counting starts at midnight each day, so that time period 0 is 00:00-00:15 and time period 95 is 23:45-00:00

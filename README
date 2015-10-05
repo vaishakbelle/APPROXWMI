@@ -1,0 +1,29 @@
+###################################################################
+Hashing-Based Approximate Probabilistic Inference in Hybrid Domains
+###################################################################
+
+INSTALLATION:
+
+> cd src 
+> make install
+
+
+RUNNING EXPERIMENTS:
+
+> cd experiments/congestion
+> ln -s ../../bin/* .
+> ./run.sh
+
+
+CONTACTS:
+
+Vaishak Belle <belle.vaishak@gmail.com>
+Guy Van den Broeck <guy.vandenbroeck@cs.kuleuven.be>
+Andrea Passerini <passerini@disi.unitn.it>
+
+Please cite ApproxWMI as:
+
+Vaishak Belle, Guy Van den Broeck, Andrea Passerini. Hashing-Based Approximate Probabilistic Inference in Hybrid Domains, 
+In Proceedings of the 31st Conference on Uncertainty in Artificial Intelligence (UAI), 2015.
+
+
