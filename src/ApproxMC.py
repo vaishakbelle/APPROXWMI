@@ -1,5 +1,5 @@
 # Code is adapted by Vaishak Belle to do WMI 
-# Notes: the code is actually for unweighted ApproxMC paper by Vardi, but Vaishak adapted the code for the AAAI-14 weigthed version 
+# Notes: adapted from http://arxiv.org/pdf/1404.2984, Distribution-Aware Sampling and Weighted Model Counting for SAT. Supratik Chakraborty, Daniel J. Fremont, Kuldeep S. Meel, Sanjit A. Seshia, and Moshe Y. Vardi. Proceedings of AAAI Conference on Artificial Intelligence (AAAI), 2014.  
 # TODO CLARIFY: there is one place where the code and the psuedo-code differs and that's line 10 of algo 3, corresponding to a commented while loop in WMICore -- if this while loop is not commented, then the program doesn't terminate! 
 
 import sys

@@ -2,6 +2,12 @@
 Hashing-Based Approximate Probabilistic Inference in Hybrid Domains
 ###################################################################
 
+PREREQUISITES: 
+
+1) Z3 version 4.3.2: python binder https://github.com/Z3Prover/z3
+2) Latte 1.6: binary https://www.math.ucdavis.edu/~latte/software.php
+
+
 INSTALLATION:
 
 > cd src 
