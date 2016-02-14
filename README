@@ -10,7 +10,9 @@ INSTALLATION:
 
 RUNNING EXPERIMENTS:
 
-> cd experiments/congestion
+> cd experiments/congestion/data
+> unzip Se*
+> cd ..
 > ln -s ../../bin/* .
 > ./run.sh
 
