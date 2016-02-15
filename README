@@ -16,12 +16,10 @@ INSTALLATION:
 
 RUNNING EXPERIMENTS:
 
-> cd experiments/congestion/data
-> unzip Se*
-> cd ..
+> cd experiments/congestion
+> unzip data/Se* -d data
 > ln -s ../../bin/* .
 > ./run.sh
-
 
 CONTACTS:
 
