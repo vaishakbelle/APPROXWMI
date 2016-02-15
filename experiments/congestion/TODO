@@ -1,8 +1,0 @@
-scenario: 
-- supply system. fixed number of destinations, order unknown (depends on specific needs of each station)
-- take a long enough cycle (e.g 10) so that exact computation is too expensive
-- the idea is that of computing the probability of ending the cycle within a certain time, given the constraints
-- we start with no constraints, and show probabilities with increasing number of constraints.
-
-combine with OMT: e.g. probability of returning within a certain time, given that you take the best route (TSP) according to
-average per-link durations (but integrate over min/max durations) consistent with existing constraints  
