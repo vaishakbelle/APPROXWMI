@@ -1,8 +1,0 @@
-*.kdev4
-*.tar.gz
-.directory
-cmake_install.cmake
-CMakeCache*
-cluster*
-docs/html
-*~
