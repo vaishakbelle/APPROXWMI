@@ -10,7 +10,8 @@ PREREQUISITES:
 
 INSTALLATION:
 
-> cd src 
+> git clone https://github.com/vaishakbelle/APPROXWMI
+> cd APPROXWMI/src 
 > make 
 
 
