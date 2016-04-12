@@ -1,0 +1,6 @@
+ This software was developed by the above authors. 
+ Permission to use, copy, and modify, this software and its
+ documentation for research purpose is hereby granted without fee,
+ provided that the work is cited as above, and this notice appears in all copies. The authors make no representations about
+ the suitability of this software for any purpose.  It is provided "as
+ is" without express or implied warranty.
