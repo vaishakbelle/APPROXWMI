@@ -1,0 +1,94 @@
+.\"
+.\"
+.\"  doalarm - run a command under an alarm clock
+.\"  --------------------------------------------
+.\"  Copyright 2001, M.J. Pomraning <mjp@pilcrow.madison.wi.us>
+.\"
+.\"  This program is free software; you can redistribute it and/or modify
+.\"  it under the terms of the GNU General Public License as published by
+.\"  the Free Software Foundation; either version 2 of the License, or
+.\"  (at your option) any later version.
+.\"
+.\"  This program is distributed in the hope that it will be useful,
+.\"  but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"  GNU General Public License for more details.
+.\"
+.\"  You should have received a copy of the GNU General Public License
+.\"  along with this program; if not, write to the Free Software
+.\"  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+.\"
+.\"
+.TH doalarm 1 "December 11, 2001" "" ""
+.SH "NAME"
+doalarm \- run a command under a timer
+.SH "SYNOPSIS"
+.B doalarm
+.RB [ " \-rh " ]
+.RB [ " \-t TYPE " ]
+.I secs command
+[
+.I " arg ... "
+]
+.SH "DESCRIPTION"
+.B doalarm
+executes
+.I command
+under an impending alarm.
+The default timer expires with a (normally fatal)
+SIGALRM after
+.I secs
+real seconds.
+
+Available process timers come in two types:  interval
+and limit.  See
+.B OPTIONS
+below for timers and respective signals.
+Interval timers may alarm just once, or may recurrently alarm
+.RB ( \-r ),
+signalling every
+.I secs
+seconds.
+
+For interval timers, a
+.I secs
+value of zero clears an inherited alarm, if any.  For
+the limit timer, zero raises
+.IR command 's
+cpu limit to the hard maximum (typically unlimited).
+
+.SH "OPTIONS"
+.TP
+.B "\-r, \-\-recur"
+Schedule recurrent alarm, ignored if
+.I secs
+is zero.  Invalid for 'cpu' timer.
+.TP
+.B "\-t TYPE, \-\-timer TYPE"
+Type of timer.  Valid values:
+.RS
+.IP cpu
+SIGXCPU; limit timer.
+.IP real
+SIGALRM (default); interval timer.
+.IP virtual
+SIGVTALRM, interval.
+.IP profile
+SIGPROF; interval.
+.PP
+Only the real timer measures
+.I secs
+in real (wall clock) time.
+.RE
+.TP
+.B "\-h, \-\-help"
+Display help message and exit.
+.TP
+.B "\-\-version"
+Display version information.
+
+.SH "SEE ALSO"
+  time(1), alarm(2), setitimer(2), setrlimit(2), signal(7)
+
+.SH "AUTHOR"
+  mjp@pilcrow.madison.wi.us (M.J. Pomraning)

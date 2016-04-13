@@ -1,0 +1,29 @@
+doalarm 0.1.7 (14 Dec 2001)
+Copyright 2001, M.J. Pomraning <mjp@pilcrow.madison.wi.us>
+README 
+
+INTRO:
+
+doalarm's basic operation is equivalent to:
+
+  $ perl -e 'alarm shift @ARGV; exec @ARGV' 5 some_command ...
+
+Especially useful for time limiting otherwise blocking commands.
+
+
+INSTALL:
+
+make
+make install
+
+
+BUGS:
+
+Bug reports to mjp@pilcrow.madison.wi.us.
+
+
+TODO:
+
+  - Floating secs parameter? (rlimit timer has integral precision)
+  - Extended secs paramater? (e.g., 5, 5s, 5m, 5h, 5d)
+  - Texinfo doc?
