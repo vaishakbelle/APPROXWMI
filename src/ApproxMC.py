@@ -136,9 +136,9 @@ def WMICore(fileName, numVariables, maxSolutions, tilt, wmax, timeout,runIndex,h
 
     if (noSolutions):
         noSolStr = 'c UNSATISFIABLE'
-        cmd = "doalarm -t profile "+str(timeout)+" cryptominisat --gaussuntil=400 --maxsolutions="+str(pivot)+" --verbosity=0 "+str(fileName)+"| grep \"v \""+" > "+str(outputFileName) 
+        cmd = "./doalarm -t profile "+str(timeout)+" ./cryptominisat --gaussuntil=400 --maxsolutions="+str(pivot)+" --verbosity=0 "+str(fileName)+"| grep \"v \""+" > "+str(outputFileName) 
     else:
-        cmd = "doalarm -t profile "+str(timeout)+" cryptominisat --gaussuntil=400 --maxsolutions="+str(pivot)+" --verbosity=0 "+str(fileName)+" > "+str(outputFileName)
+        cmd = "./doalarm -t profile "+str(timeout)+" ./cryptominisat --gaussuntil=400 --maxsolutions="+str(pivot)+" --verbosity=0 "+str(fileName)+" > "+str(outputFileName)
     starttime = time.time()
     #print cmd
     os.system(cmd)
