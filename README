@@ -6,8 +6,6 @@ PREREQUISITES:
 
 1) Z3 version 4.3.2 (python binder) https://github.com/Z3Prover/z3
 2) Latte 1.6 (binary) https://www.math.ucdavis.edu/~latte/software.php
-3) Cryptominisat 2.9.10 (binary) http://www.msoos.org/cryptominisat2
-4) doalarm 0.1.7 (binary) https://directory.fsf.org/wiki/Doalarm
 
 
 INSTALLATION:
