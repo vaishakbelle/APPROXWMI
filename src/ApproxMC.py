@@ -30,7 +30,7 @@ def ensureDirectory(path):
     if not os.path.exists(d):
         os.makedirs(d)
 def usage():
-    usageStr = "Usage: python ModelGenerator.py [options] <inputfile>\n"
+    usageStr = "Usage: python ApproxMC.py [options] <inputfile>\n"
     usageStr += "options are entered as -object=value where object can be \n"
     usageStr += "timeout: timeout for iteration in seconds (default:3000 seconds)\n"
     usageStr += "delta: the value of parameter delta\n"
@@ -86,9 +86,9 @@ def init():
     ensureDirectory("log/logging/")
 
 
-''' compute BoundedWeightSat given formula (i.e. o/p of cryptominisat), pivot, r, wmax'''
+''' compute BoundedWeightSat given formula (i.e. o/p of cryptominisat), r, wmax'''
 
-def bwsat(lines, pivot, r, wmax,t): 
+def bwsat(lines, r, wmax,t): 
     # nos models and wmi
     valCount = 0 
     wmi = 0 
@@ -121,24 +121,13 @@ def WMICore(fileName, numVariables, maxSolutions, tilt, wmax, timeout,runIndex,h
     outputFileName = TMPDIR+"/res_"+str(fileNameSuffix)+"_"+str(runIndex)+"_"+str(numVariables)+'_'+str(hashCount)+".txt"
     noSolutions = True
     cmd = ''
-    noSolStr = 's UNSATISFIABLE'
     wmi = 0
-    pivot = maxSolutions
-    repeat = 0 
-
-    # line 10 of algo 3: runs infinitely many times! while is incorrect -- just ask for the right number of models
-    # while (int(wmi/(wmax*tilt)) < maxSolutions):
-    #     pivot += 1
-    #if (int(wmi/(wmax*tilt)) < maxSolutions):
-        #pivot += maxSolutions - int(wmi/(wmax*tilt))
-    
-    # while(repeat<2):
-
+    noSolStr = 's UNSATISFIABLE'
     if (noSolutions):
         noSolStr = 'c UNSATISFIABLE'
-        cmd = "./doalarm -t profile "+str(timeout)+" ./cryptominisat --gaussuntil=400 --maxsolutions="+str(pivot)+" --verbosity=0 "+str(fileName)+"| grep \"v \""+" > "+str(outputFileName) 
+        cmd = "./doalarm -t profile "+str(timeout)+" ./cryptominisat --gaussuntil=400 --maxsolutions="+str(maxSolutions+1)+" --verbosity=0 "+str(fileName)+"| grep \"v \""+" > "+str(outputFileName) 
     else:
-        cmd = "./doalarm -t profile "+str(timeout)+" ./cryptominisat --gaussuntil=400 --maxsolutions="+str(pivot)+" --verbosity=0 "+str(fileName)+" > "+str(outputFileName)
+        cmd = "./doalarm -t profile "+str(timeout)+" ./cryptominisat --gaussuntil=400 --maxsolutions="+str(maxSolutions+1)+" --verbosity=0 "+str(fileName)+" > "+str(outputFileName)
     starttime = time.time()
     #print cmd
     os.system(cmd)
@@ -151,42 +140,22 @@ def WMICore(fileName, numVariables, maxSolutions, tilt, wmax, timeout,runIndex,h
     lines = f.readlines()
     f.close()
     os.system('rm '+outputFileName)
-    if (lines!=[]):
-        res = lines[len(lines)-1]
-        #When timeout occurs
-        if (res.strip() == 'Alarm clock: 14'):
-            return 2,0
-        if (lines[0].strip() == noSolStr):
-            return 3,0
+    #vjune if (lines!=[]):
+    res = lines[len(lines)-1]
+    #When timeout occurs
+    if (res.strip() == 'Alarm clock: 14'):
+        return 2,0
+    if (lines[0].strip() == noSolStr):
+        return 3,0
 
-    #valCount, wmi, wmax = bwsat(lines, maxSolutions, tilt, wmax,t)
-    valCount, wmi, wmax = bwsat(lines, pivot, tilt, wmax,t)
-
-    # line 4 of algo 3
-    # if (wmi==0):
-    #     break
-
-    # print models    
-    print 'cryptominisat models are ' + str(lines)   
-    # print wmi    
-    print 'WMI for this set of models is ' + str(wmi)
-
+    #boolean code: valCount = len(lines) # @vjune pivot not used in this call
+    valCount, wmi, wmax = bwsat(lines, tilt, wmax,t)
     if (not(noSolutions) and valCount!=0):
         if (lines[len(lines)-1].strip() ==  noSolStr):
             valCount= valCount-1
         valCount = valCount/2
-            
-        # if (int(wmi/(wmax*tilt)) < maxSolutions):
-        #     pivot += int(maxSolutions*wmax/wmi) #recall wmax = wmin*tilt
-        #     repeat += 1
-            
-    
-    #if ((int(wmi/wmax) > maxSolutions) or (wmi==0) or (valCount > maxSolutions)):
-    #if ((wmi==0) or (valCount > maxSolutions)):   
-    # line 13 algo 2         
-    #if ((int(wmi/wmax) > maxSolutions) or (wmi==0)): 
-    #if ((int(wmi/wmax) > pivot) or (wmi==0)):  
-    if (wmi==0):
+    # @v june, prev wmi==0
+    if (valCount == maxSolutions+1):
         return 1, 0, wmi, wmax
     else:
         return 0, valCount, wmi, wmax 
@@ -272,38 +241,22 @@ def ApproxWMI(runIndex,timeout,initialFileName,numVariables,numClauses,pivot,num
     maxSolutions = pivot
     startIteration = 0
     totalSolList = []
+    hashCountList = []
+    # wmi specific variables 
     wmiSolList = []
     wmaxSolList = []
     # initialize wmax to large number
-    wmax = 1.0 
+    wmax = 2.0e+15  
     wmi = 0
-    hashCountList = []
-    
-    # initial values, where you return immediately
-    # i.e., lines 1 and 2 of algo 2, but need hash so commenting for now
-    # isSolvable, totalSolutions, wmi, wmax = WMICore(finalFileName,numVariables,maxSolutions,tilt, wmax, timeout,runIndex,hashCount,initialFileNameSuffix, t)
-    # # test to return immediately
-    # if (isSolvable==0):
-    #     if (int(wmi/wmax) <= maxSolutions):
-    #         return totalSolutions, wmi, wmax
-            
-    # else: lines 6 onwards of algo 2 
-    # line 4/9 in algo 1 
     for i in range(numIterations):
         isSolvable = 2
         hashCount = startIteration
         countIt = 0
-        # line 12 of algo 2
-        # strong condition: while((int(wmi/wmax) <= maxSolutions) and (hashCount < numVariables)):
-        while(int(wmi/wmax) <= maxSolutions):  
-            #stop()
+        while(hashCount < numVariables):  
             startTime = time.time()
             # line 9 of algo 2: HXOR(n,i)
             addHash(initialFileName,finalFileName,numVariables,numClauses,hashCount)
-            # line 11 of algo 2: models, wmax = Bounded ... 
-            # recall maxSolutions = pivot 
             isSolvable, totalSolutions, wmi, wmax = WMICore(finalFileName,numVariables,maxSolutions,tilt, wmax, timeout,runIndex,hashCount,initialFileNameSuffix, t) 
-            #stop()
             endTime = time.time()
             timeDiff = endTime-startTime
             logStr = 'ApproxWMI:'+str(i)+':'+str(hashCount)+':'+str(timeDiff)+':'+str(isSolvable)+'\n'
@@ -312,12 +265,12 @@ def ApproxWMI(runIndex,timeout,initialFileName,numVariables,numClauses,pivot,num
                 g.write(logStr)
                 g.close()
                 
-            # line 13 of algo 2, where \perp=1 is returned if things fail
             if (isSolvable == 0):
                 totalSolList.append(totalSolutions)
                 wmiSolList.append(wmi)
                 hashCountList.append(hashCount)
-                wmaxSolList.append(totalSolutions*wmax)
+                # @vjune removed total count term
+                wmaxSolList.append(wmax)
                 break
             
             if ((isSolvable == 3) or (isSolvable == 2)):
@@ -329,9 +282,6 @@ def ApproxWMI(runIndex,timeout,initialFileName,numVariables,numClauses,pivot,num
                     hashCount = hashCount-1
             hashCount = hashCount+1
         
-            # line 1, 2 of algo 2
-            # if ((int(wmi/wmax) <= maxSolutions) and (isSolvable == 0)):
-            #     break
         
         if (startIteration == 0):
             startIteration = hashCount -5;
@@ -354,8 +304,7 @@ def ApproxWMI(runIndex,timeout,initialFileName,numVariables,numClauses,pivot,num
     medianValue = findMedian(resultMapList)
     wmiMedianValue = findMedian(wmiMapList)
     wmaxMedianValue = findMedian(wmaxMapList)
-    
-    # In AAAI-14 paper, the expression to be returned is weight(models)/wmax*2^(i-1) but then when the loop returns we add c\times wmax to the list anyway. So the code need not change between unweighted-ApproxMC and our ApproxMC 
+
     
     return medianValue*pow(2,minHashCount), wmiMedianValue*pow(2,minHashCount), wmaxMedianValue*pow(2,minHashCount)
 
@@ -484,7 +433,7 @@ def main():
         g.close()
     finalFileName = TMPDIR+"/inputFiles/input_"+str(initialFileNameSuffix)+'_'+str(runIndex)+".cnf"
     init()
-    pivot = 2*math.ceil(4.94*(1+1/epsilon)*(1+1/epsilon)) # @v: shouldn't it be e^1.5 = 4.48? 
+    pivot = 2*math.ceil(4.94*(1+1/epsilon)*(1+1/epsilon)) 
     numIterations = FindFromTable(1-delta)
     if (numIterations == 0):
         numIterations = int(math.ceil(35*math.log((3*1.0/delta),2)))
