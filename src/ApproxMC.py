@@ -109,7 +109,7 @@ def bwsat(lines, pivot, r, wmax,t):
             wmin = min(wmin, vol)
 
         # repeat until vol/w_max > pivot
-        if (wmi / wmin*r) > pivot:
+        if (wmi / (wmin*r)) > pivot:
             break
 
     # line 11 of algo 3    
