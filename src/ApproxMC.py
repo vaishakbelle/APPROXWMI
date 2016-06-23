@@ -88,15 +88,14 @@ def init():
 
 ''' compute BoundedWeightSat given formula (i.e. o/p of cryptominisat), r, wmax'''
 
-def bwsat(lines, r, wmax,t): 
+def bwsat(lines, pivot, r, wmax,t): 
     # nos models and wmi
     valCount = 0 
     wmi = 0 
     
     # min. model weight 
-    if (wmax != 0):
-        wmin = float(wmax/r)
-
+    wmin = float(wmax/r)
+        
     for line in lines: 
         # check if crypto model is LRA-consistent, and get volume 
         cons, vol = assert_and_getvol(t, line.strip('\n').strip('v '))
@@ -108,7 +107,11 @@ def bwsat(lines, r, wmax,t):
         # line 9 of algo 3
         if ((cons == 1) and (vol !=0)): 
             wmin = min(wmin, vol)
-        
+
+        # repeat until vol/w_max > pivot
+        if (wmi / wmin*r) > pivot:
+            break
+
     # line 11 of algo 3    
     return valCount, wmi, wmin*r
 
@@ -123,6 +126,7 @@ def WMICore(fileName, numVariables, maxSolutions, tilt, wmax, timeout,runIndex,h
     cmd = ''
     wmi = 0
     noSolStr = 's UNSATISFIABLE'
+
     if (noSolutions):
         noSolStr = 'c UNSATISFIABLE'
         cmd = "./doalarm -t profile "+str(timeout)+" ./cryptominisat --gaussuntil=400 --maxsolutions="+str(maxSolutions+1)+" --verbosity=0 "+str(fileName)+"| grep \"v \""+" > "+str(outputFileName) 
@@ -140,21 +144,22 @@ def WMICore(fileName, numVariables, maxSolutions, tilt, wmax, timeout,runIndex,h
     lines = f.readlines()
     f.close()
     os.system('rm '+outputFileName)
-    #vjune if (lines!=[]):
-    res = lines[len(lines)-1]
-    #When timeout occurs
-    if (res.strip() == 'Alarm clock: 14'):
-        return 2,0
-    if (lines[0].strip() == noSolStr):
-        return 3,0
+
+    if (lines!=[]):
+        res = lines[len(lines)-1]
+        #When timeout occurs
+        if (res.strip() == 'Alarm clock: 14'):
+            return 2,0
+        if (lines[0].strip() == noSolStr):
+            return 3,0
 
     #boolean code: valCount = len(lines) # @vjune pivot not used in this call
-    valCount, wmi, wmax = bwsat(lines, tilt, wmax,t)
+    valCount, wmi, wmax = bwsat(lines, maxSolutions, tilt, wmax,t)
     if (not(noSolutions) and valCount!=0):
         if (lines[len(lines)-1].strip() ==  noSolStr):
             valCount= valCount-1
         valCount = valCount/2
-    # @v june, prev wmi==0
+
     if (valCount == maxSolutions+1):
         return 1, 0, wmi, wmax
     else:
@@ -245,14 +250,15 @@ def ApproxWMI(runIndex,timeout,initialFileName,numVariables,numClauses,pivot,num
     # wmi specific variables 
     wmiSolList = []
     wmaxSolList = []
-    # initialize wmax to large number
-    wmax = 2.0e+15  
+    # initialize wmax to large number if weights are not normalized
+    wmax = 2.0e+15   
     wmi = 0
     for i in range(numIterations):
         isSolvable = 2
         hashCount = startIteration
         countIt = 0
-        while(hashCount < numVariables):  
+        rat = maxSolutions + 1
+        while((rat >  maxSolutions) and (hashCount < numVariables)):
             startTime = time.time()
             # line 9 of algo 2: HXOR(n,i)
             addHash(initialFileName,finalFileName,numVariables,numClauses,hashCount)
@@ -264,7 +270,9 @@ def ApproxWMI(runIndex,timeout,initialFileName,numVariables,numClauses,pivot,num
                 g = open(logFileName,'a')
                 g.write(logStr)
                 g.close()
-                
+ 
+            rat = int(wmi/wmax)
+               
             if (isSolvable == 0):
                 totalSolList.append(totalSolutions)
                 wmiSolList.append(wmi)
@@ -305,7 +313,6 @@ def ApproxWMI(runIndex,timeout,initialFileName,numVariables,numClauses,pivot,num
     wmiMedianValue = findMedian(wmiMapList)
     wmaxMedianValue = findMedian(wmaxMapList)
 
-    
     return medianValue*pow(2,minHashCount), wmiMedianValue*pow(2,minHashCount), wmaxMedianValue*pow(2,minHashCount)
 
 #returns action(int),error(string),paramMap(dict) where 
@@ -433,7 +440,7 @@ def main():
         g.close()
     finalFileName = TMPDIR+"/inputFiles/input_"+str(initialFileNameSuffix)+'_'+str(runIndex)+".cnf"
     init()
-    pivot = 2*math.ceil(4.94*(1+1/epsilon)*(1+1/epsilon)) 
+    pivot = 2*math.ceil(4.94*(1+1/epsilon)*(1+1/epsilon)) #PSEUDOCODE: 2*math.ceil(math.exp(3./2)*(1+1/epsilon)*(1+1/epsilon))
     numIterations = FindFromTable(1-delta)
     if (numIterations == 0):
         numIterations = int(math.ceil(35*math.log((3*1.0/delta),2)))
