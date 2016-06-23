@@ -160,7 +160,9 @@ def WMICore(fileName, numVariables, maxSolutions, tilt, wmax, timeout,runIndex,h
             valCount= valCount-1
         valCount = valCount/2
 
-    if (valCount == maxSolutions+1):
+    # THIS IS THE BOOLEAN VERSION!!
+    #if (valCount == maxSolutions+1):
+    if (wmi / wmax) > maxSolutions:
         return 1, 0, wmi, wmax
     else:
         return 0, valCount, wmi, wmax 
