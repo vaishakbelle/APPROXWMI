@@ -153,15 +153,13 @@ def WMICore(fileName, numVariables, maxSolutions, tilt, wmax, timeout,runIndex,h
         if (lines[0].strip() == noSolStr):
             return 3,0
 
-    #boolean code: valCount = len(lines) # @vjune pivot not used in this call
     valCount, wmi, wmax = bwsat(lines, maxSolutions, tilt, wmax,t)
+
     if (not(noSolutions) and valCount!=0):
         if (lines[len(lines)-1].strip() ==  noSolStr):
             valCount= valCount-1
         valCount = valCount/2
-
-    # THIS IS THE BOOLEAN VERSION!!
-    #if (valCount == maxSolutions+1):
+    
     if (wmi / wmax) > maxSolutions:
         return 1, 0, wmi, wmax
     else:
@@ -309,7 +307,6 @@ def ApproxWMI(runIndex,timeout,initialFileName,numVariables,numClauses,pivot,num
     for i in range(len(hashCountList)):
         resultMapList.append(pow(2,hashCountList[i]-minHashCount)*totalSolList[i])
         wmiMapList.append(pow(2,hashCountList[i]-minHashCount)*wmiSolList[i])
-        #wmiMapList.append(pow(2,hashCountList[i]-1)*wmiSolList[i])
         wmaxMapList.append(pow(2,hashCountList[i]-minHashCount)*wmaxSolList[i])
     medianValue = findMedian(resultMapList)
     wmiMedianValue = findMedian(wmiMapList)
