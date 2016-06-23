@@ -440,7 +440,7 @@ def main():
         g.close()
     finalFileName = TMPDIR+"/inputFiles/input_"+str(initialFileNameSuffix)+'_'+str(runIndex)+".cnf"
     init()
-    pivot = 2*math.ceil(4.94*(1+1/epsilon)*(1+1/epsilon)) #PSEUDOCODE: 2*math.ceil(math.exp(3./2)*(1+1/epsilon)*(1+1/epsilon))
+    pivot = 2*math.ceil(4.4817*(1+1/epsilon)*(1+1/epsilon)) 
     numIterations = FindFromTable(1-delta)
     if (numIterations == 0):
         numIterations = int(math.ceil(35*math.log((3*1.0/delta),2)))

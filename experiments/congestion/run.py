@@ -706,7 +706,7 @@ def approximate_volume(t,problem_name, tilt):
     # user-specified constants
     epsilon = .9
     delta = .1
-    pivot = 2*math.ceil(4.94*(1+1/epsilon)*(1+1/epsilon)) # @v: shouldn't it be e^1.5 = 4.48? 
+    pivot = 2*math.ceil(4.4817*(1+1/epsilon)*(1+1/epsilon))
     numIterations = FindFromTable(1-delta)
     if (numIterations == 0):
         numIterations = int(math.ceil(35*math.log((3*1.0/delta),2)))
