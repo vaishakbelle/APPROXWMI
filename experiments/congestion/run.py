@@ -599,26 +599,26 @@ def toy_problem_set(g):
 
     return problem_set
 
-def solve_problem(problem,problem_name):
+def solve_problem(problem,problem_name,tilt):
 
     print "Evaluating theory for P(query AND evidence)"
     t=build_boolean_theory(problem,"le")
     vol_pos=volume(t.s,t.pwd,t.ld,t.bounds,t.dvars)
     t=build_boolean_theory(problem,"le")
-    approx_vol_pos=approximate_volume(t,problem_name)
+    approx_vol_pos=approximate_volume(t,problem_name,tilt)
     print "exact volume=%f approx volume=%f difference(%%)=%f" %(vol_pos,approx_vol_pos,(vol_pos-approx_vol_pos)/vol_pos)
 
     print "Evaluating theory for P(NOT query AND evidence)"
     t=build_boolean_theory(problem,"ge")
     vol_neg=volume(t.s,t.pwd,t.ld,t.bounds,t.dvars)
     t=build_boolean_theory(problem,"ge")
-    approx_vol_neg=approximate_volume(t,problem_name)
+    approx_vol_neg=approximate_volume(t,problem_name,tilt)
     print "exact volume=%f approx volume=%f difference(%%)=%f" %(vol_neg,approx_vol_neg,(vol_neg-approx_vol_neg)/vol_neg)
 
     print "EXACT P(query|evidence) = %f" % (vol_pos/(vol_pos+vol_neg))
     print "APPROX P(query|evidence) = %f" % (approx_vol_pos/(approx_vol_pos+approx_vol_neg))
 
-def solve_problem_set(problem_set,problem_name,exact=False,reverse=False):
+def solve_problem_set(problem_set,problem_name,tilt,exact=False,reverse=False):
 
     curr_problem_set=problem_set
     
@@ -630,9 +630,9 @@ def solve_problem_set(problem_set,problem_name,exact=False,reverse=False):
         print problem
         start_time = time.time()
         t=build_boolean_theory(problem,"le")
-        approx_vol_pos=approximate_volume(t,problem_name)
+        approx_vol_pos=approximate_volume(t,problem_name,tilt)
         t=build_boolean_theory(problem,"ge")
-        approx_vol_neg=approximate_volume(t,problem_name)   
+        approx_vol_neg=approximate_volume(t,problem_name,tilt)   
         end_time = time.time()
         print "APPROX P(query|evidence) = %f" % (approx_vol_pos/(approx_vol_pos+approx_vol_neg))
         print_problem_stats(problem,t)
@@ -667,7 +667,7 @@ def check_feasibility(problem):
         return False
     return True
 
-def approximate_volume(t,problem_name):
+def approximate_volume(t,problem_name, tilt):
     
     # variables for approx
     runIndex = str(int(time.time()))
@@ -706,7 +706,6 @@ def approximate_volume(t,problem_name):
     # user-specified constants
     epsilon = .9
     delta = .1
-    tilt = 5
     pivot = 2*math.ceil(4.94*(1+1/epsilon)*(1+1/epsilon)) # @v: shouldn't it be e^1.5 = 4.48? 
     numIterations = FindFromTable(1-delta)
     if (numIterations == 0):
@@ -726,22 +725,23 @@ def approximate_volume(t,problem_name):
 
 if __name__ == "__main__":
 
-    if len(sys.argv) < 4:
-        print "Usage: " + sys.argv[0] + " <srcfile> <maxd> <toy/random> [<rand_length> <rand_maxconst>]"
+    if len(sys.argv) < 5:
+        print "Usage: " + sys.argv[0] + " <srcfile> <maxd> <toy/random> <tilt> [<rand_length> <rand_maxconst>]"
         sys.exit(0)
 
     srcfile=sys.argv[1]
     maxd=int(sys.argv[2])
     probtype=sys.argv[3]
+    tilt=int(sys.argv[4])
     if probtype != "toy" and probtype != "random":
         print "ERROR: unknown problem type, expected 'toy' or 'random', got '%s'" %probtype
         sys.exit(0)
     if probtype == "random":
-        if len(sys.argv) < 6:
-            print "Usage: " + sys.argv[0] + " <srcfile> <toy/random> [<maxd> <length> <maxconst>]"
+        if len(sys.argv) < 7:
+            print "Usage with random: " + sys.argv[0] + " <srcfile> <maxd> random <tilt> <rand_length> <maxconst>"
             sys.exit(0)
-        length=int(sys.argv[4])
-        max_num_constraints=int(sys.argv[5])
+        length=int(sys.argv[5])
+        max_num_constraints=int(sys.argv[6])
         
     # function to extract subgraph around node with highest degree
     problem_name=extract_central_subgraph(srcfile,maxd)
@@ -752,7 +752,7 @@ if __name__ == "__main__":
     
     # try out toy problem
     if probtype=='toy':
-        solve_problem_set(toy_problem_set(g),'toy',exact=True,reverse=False)
+        solve_problem_set(toy_problem_set(g),'toy',tilt,exact=True,reverse=False)
     
     else:
         # problem factory
@@ -765,5 +765,5 @@ if __name__ == "__main__":
             problem_set=factory.generate_set_of_problems(length,max_num_constraints)
             feasible=check_feasibility(problem_set[-1])
         print "Feasible problem set found"
-        solve_problem_set(problem_set,problem_name,exact=True,reverse=True)
+        solve_problem_set(problem_set,problem_name,tilt,exact=True,reverse=True)
 
