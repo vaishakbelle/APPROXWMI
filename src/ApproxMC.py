@@ -160,8 +160,10 @@ def WMICore(fileName, numVariables, maxSolutions, tilt, wmax, timeout,runIndex,h
             valCount= valCount-1
         valCount = valCount/2
     
-    if (wmi / wmax) > maxSolutions:
+    if (wmi / wmax) > maxSolutions: # volume larger than threshold
         return 1, 0, wmi, wmax
+    elif not valCount: # no solution
+        return 3, valCount, wmi, wmax 
     else:
         return 0, valCount, wmi, wmax 
 
