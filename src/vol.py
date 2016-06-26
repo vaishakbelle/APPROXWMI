@@ -276,7 +276,8 @@ def volume_mc(s, pwd, ld, bounds, dvars):
             currentvolume = output.replace("Answer:","").strip('\n')
             print 'current volume is ' + currentvolume
             currentweight *= convert_to_float(currentvolume)
-            modelweight += currentweight
+        
+        modelweight += currentweight
 
         # discard model 
         G = False
@@ -388,7 +389,8 @@ def volume(s, pwd, ld, bounds, dvars):
             currentvolume = output.replace("Answer:","").strip('\n')
             print 'current volume is ' + currentvolume
             currentweight *= convert_to_float(currentvolume)
-            modelweight += currentweight
+        
+        modelweight += currentweight
 
         # discard model 
         G = False
