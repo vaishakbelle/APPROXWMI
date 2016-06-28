@@ -225,13 +225,6 @@ def addHash(initialFileName,finalFileName,numVariables,numClauses,numHash):
     if (numHash > 0):
         f.write(hashClauses)
     f.close()
-
-def findMedian(inputList):
-    numList = sorted(inputList)
-    medIndex = int((len(numList)+1)/2)
-    if (medIndex >= len(numList)):
-        return numList[medIndex-1]
-    return numList[medIndex]
     
     
 # Implementation of ApproxWMI with leapfrogging (the leapfrogging call can be improved)
