@@ -675,7 +675,6 @@ def approximate_volume(t,problem_name, tilt):
     initialFileName = ''
     numVariables = 0
     numClauses = 0
-    pivot=0
     numIterations = 1
     leapfrogging = True
     shouldLog = False
@@ -704,8 +703,8 @@ def approximate_volume(t,problem_name, tilt):
     init()
 
     # user-specified constants
-    epsilon = .9
-    delta = .1
+    epsilon = .8
+    delta = .2
     pivot = 2*math.ceil(4.4817*(1+1/epsilon)*(1+1/epsilon))
     numIterations = FindFromTable(1-delta)
     if (numIterations == 0):
