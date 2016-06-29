@@ -90,7 +90,7 @@ def assert_and_getvol(t, model):
         if (key != 0): # dimacs EOF
             if key > 0:
                 s.add(varmap[key+offset] == True)
-                true_variables.add(str(varmap[key]))
+                true_variables.add(str(varmap[key+offset]))
             else: 
                 s.add(varmap[abs(key)+offset] == False)
     
