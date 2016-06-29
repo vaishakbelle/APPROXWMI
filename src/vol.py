@@ -281,18 +281,15 @@ def volume_mc(s, pwd, ld, bounds, dvars):
 
         # discard model 
         G = False
-        # mentioned vars
-        mentioned = 0
         # print dvars
         for x in dvars:
             if (s.model()[x]):
-                mentioned +=1
                 G = Or(G, x != s.model()[x])
-        
-        # print "mentioned, dvars, count " +  str(mentioned) + " " + str(len(dvars)) + " " + str(count)
-        count += pow(2, len(dvars) - mentioned)
-        # print "current formula"
-        # print G
+            else: 
+                G =Or(G,x == True)
+
+        # increment model count         
+        count += 1
         s.add(G)
 
 
@@ -394,11 +391,15 @@ def volume(s, pwd, ld, bounds, dvars):
 
         # discard model 
         G = False
+        # print dvars
         for x in dvars:
-            if (s.model()[x]): 
+            if (s.model()[x]):
                 G = Or(G, x != s.model()[x])
-        s.add(G) 
-            
+            else: 
+                G =Or(G,x == True)
+
+        s.add(G)            
+
     return modelweight 
 
 ''' read from data.csv'''
