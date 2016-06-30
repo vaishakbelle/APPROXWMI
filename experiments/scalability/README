@@ -1,4 +1,6 @@
 1) ln -s ../../src/*.py . 
-2) python run.py data_files 5
+2) mkdir tmp 
+3) python run.py data_files t
 
-where 5 is the tilt. 
+where t is the tilt, e.g. 5. 
+
