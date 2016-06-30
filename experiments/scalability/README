@@ -1,0 +1,4 @@
+1) ln -s ../../src/*.py . 
+2) python run.py data_files 5
+
+where 5 is the tilt. 
