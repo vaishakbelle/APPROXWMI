@@ -90,7 +90,7 @@ def assert_and_getvol(t, model):
                 continue
             if key > 0:
                 s.add(varmap[key+offset] == True)
-                true_variables.add(str(varmap[key+offset]))
+                # true_variables.add(str(varmap[key+offset]))
             else: 
                 s.add(varmap[abs(key)+offset] == False)
     
