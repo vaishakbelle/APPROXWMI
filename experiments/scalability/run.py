@@ -27,8 +27,6 @@ class Theory:
         self.bounds = []
         # Boolean decision variables for SMT solver, which are associated with weights and latte descriptions
         self.dvars = [] # CHANGE to latte_vars when stable  
-        # Mapping between SAT CNF and SMT Boolean decision variables (for z3/cryptominisat interface)
-        self.cnf2smt_varmap = []
         # Set of formulas in cnf for the SAT solver (cryptominisat)
         self.cnf_formulas = []
 
@@ -54,13 +52,11 @@ class Theory:
                 # update Boolean variables
                 self.update_bvars(bvar)
 
-                # add Latter formula
+                # add Latte formula
                 self.ld[bvar]=latteformula
 
                 # add Latte weight
                 self.pwd[bvar]=weight
-            else:
-                print "WARNING: unnamed formula '%s'" %row.strip() 
 
             # update Theory variables
             self.update_tvars(smtformula)
