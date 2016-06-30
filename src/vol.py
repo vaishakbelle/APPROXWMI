@@ -81,13 +81,13 @@ def assert_and_getvol(t, model):
     else:
         varmap=t.dvars
         offset=-1
-
-    true_variables=set()
-
+        
     # read dimacs model     
     numbers = map(int, model.split())
     for key in numbers:        
         if (key != 0): # dimacs EOF
+            if varmap[abs(key)+offset] == None: # skip tseitin variables
+                continue
             if key > 0:
                 s.add(varmap[key+offset] == True)
                 true_variables.add(str(varmap[key+offset]))

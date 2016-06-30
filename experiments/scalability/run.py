@@ -12,7 +12,7 @@ import random
 from numpy import array,histogram,median
 from scipy.stats import linregress
 from copy import deepcopy
-
+import re
 
 '''a simple class to maintain z3 solver, latte bounds, and other variables needed for computing volume'''
 class Theory: 
@@ -30,17 +30,27 @@ class Theory:
         # Set of formulas in cnf for the SAT solver (cryptominisat)
         self.cnf_formulas = []
 
+        # mapping from cnf ids to smt variables
+        self.cnf2smt_varmap = {}
+
+        # maps Boolean decision variable names to cnf variable indices
+        self.names2ids = {}
+
         # mapping from names to variables
         self.variables = {}
 
         # list of candidate names for theory variables
         self.theoryvarlist = "uvwxyz"
 
+        # encoder to turn boolean abstraction to cnf
+        self.cnf_encoder = Then('simplify', 'tseitin-cnf')
+        
+        # map collecting tseitin variables in cnf encoding
+        self.tseitin_vars = {}
+
     def load(self, filename):
 
-        f=open(filename)        
-        
-        smtformulas=[]
+        f=open(filename)                
 
         for row in f:
             data=row.strip().split(",")
@@ -69,8 +79,10 @@ class Theory:
             # add Theory formula
             formula = parse_smt2_string(smtformula, decls=self.variables)
             self.add(formula)
+
+            # add cnf formula
+            self.add_cnf_formula(formula)
             
-        print "WARNING: DON'T KNOW HOW TO GENERATE CNF FORMULAS"
         f.close()
 
     def add(self, e):
@@ -80,6 +92,9 @@ class Theory:
         if not self.variables.has_key(bvar):
             self.variables[bvar] = Bool(bvar)
             self.dvars.append(self.variables[bvar])
+            cnf_id = len(self.dvars)+len(self.tseitin_vars)
+            self.names2ids[bvar] = cnf_id 
+            self.cnf2smt_varmap[cnf_id] = self.variables[bvar]
 
     def update_tvars(self, smtformula):
         for tvar in self.get_theoryvars(smtformula):
@@ -96,9 +111,56 @@ class Theory:
     def save_cnf_formulas(self, filename):
         f=open(filename,"w")
         f.write('c cnf file for scalability data\n')
-        f.write('p cnf %d %d\n' %(len(self.cnf2smt_varmap),len(self.cnf_formulas)))
+        f.write('p cnf %d %d\n' %(len(self.dvars),len(self.cnf_formulas)))
         f.writelines(self.cnf_formulas)
+        
+    def add_cnf_formula(self, formula):
+        cnf_formula = self.cnf_encoder(formula)
+        assert len(cnf_formula) == 1
+        cnf_formulas = []
 
+        for term in cnf_formula[0]:
+
+            atoms=[]
+
+            if term.decl().kind() == 265L: # formula is someting like Not(a)
+                atoms.append(str(-1*self.names2ids[str(term.arg(0))]))
+
+            elif term.decl().kind() == 262L: # formula is someting like Or(b,Not(a))
+                for i in range(term.num_args()): 
+                    atom = term.arg(i)
+                    weight = 1
+
+                    if term.arg(i).decl().kind() == 265L:  # negated formula                       
+                        assert len(term.arg(i).children()) == 1
+                        atom = term.arg(i).children()[0]
+                        weight = -1
+
+                    atomstr=str(atom)
+
+                    if self.names2ids.has_key(atomstr):                            
+                        cnf_id = self.names2ids[atomstr]
+
+                    elif re.search("[a-z]![0-9]+",atomstr): # tseitin variable
+                        if not self.tseitin_vars.has_key(atomstr):
+                            print "Adding tseitin variable '%s'" %atomstr
+                            cnf_id = len(self.dvars)+len(self.tseitin_vars)+1
+                            self.tseitin_vars[atomstr] = cnf_id
+                            self.cnf2smt_varmap[cnf_id] = None # skip tseitin variable in volume estimation
+                        else:
+                            cnf_id = self.tseitin_vars[atomstr]
+                    else:
+                        print "Found non-Boolean atom '%s', skipping formula '%s'" %(atom,cnf_formula)
+                        return 
+
+                    atoms.append(str(weight * cnf_id))                
+
+            else: # formula is a variable
+                atoms.append(str(self.names2ids[str(term)]))
+
+            cnf_formulas.append(" ".join(atoms) + " 0")
+
+        self.cnf_formulas.extend(cnf_formulas)
 
 def load_data(datadir):
     
@@ -219,6 +281,6 @@ if __name__ == "__main__":
     datadir=sys.argv[1]
     tilt=int(sys.argv[2])
 
-    problem_set=load_data(datadir)    
+    problem_set=load_data(datadir)      
     #solve_problem_set(problem_set,tilt,exact=True)
 
