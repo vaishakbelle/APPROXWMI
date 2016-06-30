@@ -48,7 +48,12 @@ class Theory:
             smtformula=data[1]
             latteformula=data[2]
             weight=data[3]
-            if bvar:
+
+            if not weight: 
+                # recover bound
+                self.bounds.append(latteformula)
+
+            elif bvar:
                 # update Boolean variables
                 self.update_bvars(bvar)
 
