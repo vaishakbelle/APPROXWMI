@@ -115,7 +115,7 @@ class Theory:
     def save_cnf_formulas(self, filename):
         f=open(filename,"w")
         f.write('c cnf file for scalability data\n')
-        f.write('p cnf %d %d\n' %(len(self.dvars),len(self.cnf_formulas)))
+        f.write('p cnf %d %d\n' %(len(self.dvars)+len(self.tseitin_vars),len(self.cnf_formulas)))
         f.writelines(self.cnf_formulas)
         
     def add_cnf_formula(self, formula):
