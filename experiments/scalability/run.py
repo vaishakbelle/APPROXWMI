@@ -73,15 +73,19 @@ class Theory:
                 # add Latte weight
                 self.pwd[bvar]=weight
 
-            # update Theory variables
-            self.update_tvars(smtformula)
+                if smtformula:
+                    raise Exception("ERROR: format requires variable definition to be separate from SMT formulas")
 
-            # add Theory formula
-            formula = parse_smt2_string(smtformula, decls=self.variables)
-            self.add(formula)
+            else:
+                # update Theory variables
+                self.update_tvars(smtformula)
 
-            # add cnf formula
-            self.add_cnf_formula(formula)
+                # add Theory formula
+                formula = parse_smt2_string(smtformula, decls=self.variables)
+                self.add(formula)
+
+                # add cnf formula
+                self.add_cnf_formula(formula)
             
         f.close()
 
