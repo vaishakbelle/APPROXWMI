@@ -178,6 +178,9 @@ def load_data(datadir):
         if not os.path.isfile(fullname):
             print "Skipping non-regular file %s" %filename
             continue
+        if filename.startswith("._") or filename.startswith(".D"):
+            print "Skipping non-regular file %s" %filename
+            continue
         prefix=filename.split(".")[0]
         t = Theory()
         print "Loading problem " + filename
@@ -186,24 +189,28 @@ def load_data(datadir):
 
     return problem_set
 
-def solve_problem_set(problem_set,tilt,exact=False):
+def solve_problem_set(problem_set,tilt,approx=True,exact=False):
 
     for (problem_name,theory) in problem_set.items():
         print "Solving problem " + problem_name
         print theory
-        start_time = time.time()
-        approx_vol=approximate_volume(theory,problem_name,tilt)
-        end_time = time.time()
-        print "APPROX volume = %f" % approx_vol
-        print_problem_stats(theory)
-        print "Elapsed time was " + str(end_time - start_time)      
+
+        if approx:
+            start_time = time.time()
+            approx_vol=approximate_volume(theory,problem_name,tilt)
+            end_time = time.time()
+            print "APPROX volume = %f" % approx_vol
+            print_problem_stats(theory)
+            print "Elapsed time was " + str(end_time - start_time)      
         if exact:
             start_time = time.time()
             vol=volume(theory.s,theory.pwd,theory.ld,theory.bounds,theory.dvars)
             print "EXACT volume = %f" % vol
-            print "DIFFERENCE exact volume=%f approx volume=%f difference(%%)=%f" %(vol,approx_vol,(vol-approx_vol)/vol)
             end_time = time.time()
             print "Elapsed time was " + str(end_time - start_time)      
+
+        if approx:     
+            print "DIFFERENCE exact volume=%f approx volume=%f difference(%%)=%f" %(vol,approx_vol,(vol-approx_vol)/vol)
 
 
 def print_problem_stats(theory):
@@ -286,5 +293,5 @@ if __name__ == "__main__":
     tilt=int(sys.argv[2])
 
     problem_set=load_data(datadir)      
-    solve_problem_set(problem_set,tilt,exact=True)
+    solve_problem_set(problem_set,tilt,approx=False,exact=True)
 
