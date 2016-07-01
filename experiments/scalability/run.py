@@ -293,5 +293,5 @@ if __name__ == "__main__":
     tilt=int(sys.argv[2])
 
     problem_set=load_data(datadir)      
-    solve_problem_set(problem_set,tilt,approx=False,exact=True)
+    solve_problem_set(problem_set,tilt,approx=True,exact=True)
 
