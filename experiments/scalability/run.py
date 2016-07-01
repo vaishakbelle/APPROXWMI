@@ -48,7 +48,7 @@ class Theory:
         # map collecting tseitin variables in cnf encoding
         self.tseitin_vars = {}
 
-    def load(self, filename,abstraction=False):
+    def load(self, filename,abstraction):
 
         f=open(filename)                
 
@@ -59,8 +59,9 @@ class Theory:
             latteformula=data[2]
             weight=data[3]
 
-            if not abstraction:
-                if not weight: 
+            if not weight: 
+                if not abstraction:
+            
                     # recover bound
                     self.bounds.append(latteformula)
 
