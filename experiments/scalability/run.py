@@ -204,10 +204,10 @@ def solve_problem_set(problem_set,tilt,approx=True,exact=False):
             print "Elapsed time was " + str(end_time - start_time)      
         if exact:
             start_time = time.time()
-            vol=volume(theory.s,theory.pwd,theory.ld,theory.bounds,theory.dvars)
-            print "EXACT volume = %f" % vol
+            mc,vol=volume_mc(theory.s,theory.pwd,theory.ld,theory.bounds,theory.dvars)
+            print "EXACT volume,mc = %f, %f" % (vol,mc)
             end_time = time.time()
-            print "Elapsed time was " + str(end_time - start_time)      
+            print "Elapsed time was " + str(end_time - start_time)     
 
         if approx:     
             print "DIFFERENCE exact volume=%f approx volume=%f difference(%%)=%f" %(vol,approx_vol,(vol-approx_vol)/vol)
