@@ -1,6 +1,6 @@
 1) ln -s ../../src/*.py . 
 2) mkdir tmp 
-3) python run.py data t
+3) python run.py data t b
 
-where t is the tilt, e.g. 5. 
+where t is the tilt, e.g. 5, and b = True/False enables/disables abstraction-based counting. 
 
