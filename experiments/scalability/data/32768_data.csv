@@ -1,0 +1,39 @@
+a,,1 -1 0 0 0 0,1
+b,,1 0 -1 0 0 0,1
+c,,0 1 0 0 0 0,1
+d,,0 0 1 0 0 0,1
+f,,1 0 0 -1 0 0,1
+f2,,0 0 0 1 0 0,1
+,,0 1 0 0 0 0|2 -1 0 0 0 0,
+,,0 0 1 0 0 0|1 0 -1 0 0 0,
+,,0 0 0 1 0 0|2 0 0 -1 0 0,
+,,0 0 0 0 1 0|1 0 0 0 -1 0,
+,,0 0 0 0 0 1|1 0 0 0 0 -1,
+,(assert (iff f (<= z 2))),,-1
+,(assert (iff f2 (> z 0))),,-1
+,(assert (iff a (<= x 2))),,-1
+,(assert (iff b (<= y 1))),,-1
+,(assert (iff c (> x 0))),,-1
+,(assert (iff d (> y 0))),,-1
+aq,,1 -1 0 0 0 0,1
+,(assert (iff aq (<= x 1))),,-1
+ep,,1 0 0 -1 0 0,1
+,(assert (iff ep (<= z 1))),,-1
+,(assert (and (and (and (and f2 f) a) (and (and ep aq) b)) (and (and true c) d))),,-1
+e1,,,1
+f1,,,1
+d2,,,1
+f2,,,1
+e2,,,1
+ap,,,1
+bp,,,1
+cp,,,1
+dp,,,1
+bq,,,1
+cq,,,1
+dq,,,1
+c3,,,1
+a1,,,1
+c1,,,1
+d1,,,1
+,(assert (or (or (or (or (or (or (or (or (or (or (or (or (or (or d1 c1) a1) c3) dq) cq) bq) dp) cp) bp) ap) e2) d2) e1) (or f2 f1))),,-1
