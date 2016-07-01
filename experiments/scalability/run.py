@@ -48,7 +48,7 @@ class Theory:
         # map collecting tseitin variables in cnf encoding
         self.tseitin_vars = {}
 
-    def load(self, filename):
+    def load(self, filename,abstraction=False):
 
         f=open(filename)                
 
@@ -59,16 +59,20 @@ class Theory:
             latteformula=data[2]
             weight=data[3]
 
-            if not weight: 
-                # recover bound
-                self.bounds.append(latteformula)
+            if not abstraction:
+                if not weight: 
+                    # recover bound
+                    self.bounds.append(latteformula)
 
             elif bvar:
                 # update Boolean variables
                 self.update_bvars(bvar)
 
                 # add Latte formula
-                self.ld[bvar]=latteformula
+                if abstraction:
+                    self.ld[bvar]=""
+                else:    
+                    self.ld[bvar]=latteformula
 
                 # add Latte weight
                 self.pwd[bvar]=weight
@@ -82,6 +86,12 @@ class Theory:
 
                 # add Theory formula
                 formula = parse_smt2_string(smtformula, decls=self.variables)
+                print formula
+                if abstraction: 
+                    if self.get_theoryvars(smtformula): 
+                        print "theory vars with abstraction, skipping %s", formula
+                        continue
+
                 self.add(formula)
 
                 # add cnf formula
@@ -127,10 +137,10 @@ class Theory:
 
             atoms=[]
 
-            if term.decl().kind() == 265L: # formula is someting like Not(a)
+            if term.decl().kind() == 265L: # formula is something like Not(a)
                 atoms.append(str(-1*self.names2ids[str(term.arg(0))]))
 
-            elif term.decl().kind() == 262L: # formula is someting like Or(b,Not(a))
+            elif term.decl().kind() == 262L: # formula is something like Or(b,Not(a))
                 for i in range(term.num_args()): 
                     atom = term.arg(i)
                     weight = 1
@@ -166,7 +176,7 @@ class Theory:
 
         self.cnf_formulas.extend(cnf_formulas)
 
-def load_data(datadir):
+def load_data(datadir,abstraction=False):
     
     problem_set={}
     
@@ -184,7 +194,7 @@ def load_data(datadir):
         prefix=filename.split(".")[0]
         t = Theory()
         print "Loading problem " + filename
-        t.load(fullname)
+        t.load(fullname,abstraction)
         problem_set[prefix] = t
 
     return problem_set
@@ -286,12 +296,13 @@ def approximate_volume(t,problem_name, tilt):
 if __name__ == "__main__":
 
     if len(sys.argv) < 3:
-        print "Usage: " + sys.argv[0] + " <data_dir> <tilt>"
+        print "Usage: " + sys.argv[0] + " <data_dir> <tilt> <abstraction>"
         sys.exit(0)
 
     datadir=sys.argv[1]
     tilt=int(sys.argv[2])
+    abstraction = eval(sys.argv[3])
 
-    problem_set=load_data(datadir)      
+    problem_set=load_data(datadir,abstraction)      
     solve_problem_set(problem_set,tilt,approx=True,exact=True)
 
