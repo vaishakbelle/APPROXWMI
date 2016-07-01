@@ -1,0 +1,54 @@
+a,,1 -1 0 0 0 0,1
+b,,1 0 -1 0 0 0,1
+c,,0 1 0 0 0 0,1
+d,,0 0 1 0 0 0,1
+f,,1 0 0 -1 0 0,1
+f2,,0 0 0 1 0 0,1
+e,,,1
+,,0 1 0 0 0 0|1 -1 0 0 0 0,
+,,0 0 1 0 0 0|1 0 -1 0 0 0,
+,,0 0 0 1 0 0|1 0 0 -1 0 0,
+,,0 0 0 0 1 0|1 0 0 0 -1 0,
+,,0 0 0 0 0 1|1 0 0 0 0 -1,
+,(assert (iff f (<= z 1))),,-1
+,(assert (iff f2 (> z 0))),,-1
+,(assert (iff a (<= x 1))),,-1
+,(assert (iff b (<= y 1))),,-1
+,(assert (iff c (> x 0))),,-1
+,(assert (iff d (> y 0))),,-1
+,(assert (iff e (> (* -3 z) 0))),,-1
+e1,,,1
+f1,,,1
+d2,,,1
+f2,,,1
+e2,,,1
+ap,,,1
+aq,,,1
+,(assert (iff aq (> x 1))),,-1
+bp,,,1
+cp,,,1
+dp,,,1
+bq,,,1
+cq,,,1
+dq,,,1
+ep,,,1
+,(assert (iff ep (> z 1))),,-1
+c3,,,1
+a1,,,1
+,(assert (or a1 (or f (or f2 (or cp dp))))),,-1
+b1,,,1
+,(assert (or b1 (or e (or f ep)))),,-1
+c1,,,1
+,(assert (and (and a b) (and c d))),,-1
+d1,,,1
+,(assert (or d1 (or e1 f1))),,-1
+a2,,,1
+,(assert (iff a2 (> (+ y (* 3 x)) 5))),,-1
+b2,,,1
+,(assert (or b2 (or e2 (or d2 f2)))),,-1
+,(assert (or (or a1 b1) c1)),,-1
+,(assert (or e f)),,-1
+,(assert (or (or a1 b1) (or c1 d1))),,-1
+c2,,,1
+,(assert (or (or a2 b2) (or c2 (or d2 c3)))),,-1
+,(assert (or (or aq bq) (or cq (or dq c3)))),,-1
