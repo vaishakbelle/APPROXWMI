@@ -162,7 +162,7 @@ class Theory:
             else: # formula is a variable
                 atoms.append(str(self.names2ids[str(term)]))
 
-            cnf_formulas.append(" ".join(atoms) + " 0")
+            cnf_formulas.append(" ".join(atoms) + " 0\n")
 
         self.cnf_formulas.extend(cnf_formulas)
 
