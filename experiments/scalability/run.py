@@ -82,7 +82,7 @@ class Theory:
 
             else:
                 # update Theory variables
-                numtvars = self.update_tvars(smtformula):
+                numtvars = self.update_tvars(smtformula)
 
                 if not numtvars or mode == "wmi":
 
@@ -176,7 +176,7 @@ class Theory:
 
         self.cnf_formulas.extend(cnf_formulas)
 
-def load_data(datadir,mode="wmi")
+def load_data(datadir,mode="wmi"):
     
     problem_set={}
     
