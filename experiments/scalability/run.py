@@ -48,7 +48,7 @@ class Theory:
         # map collecting tseitin variables in cnf encoding
         self.tseitin_vars = {}
 
-    def load(self, filename,abstraction):
+    def load(self, filename, mode="wmi"):
 
         f=open(filename)                
 
@@ -60,8 +60,7 @@ class Theory:
             weight=data[3]
 
             if not weight: 
-                if not abstraction:
-            
+                if mode == "wmi":            
                     # recover bound
                     self.bounds.append(latteformula)
 
@@ -70,10 +69,10 @@ class Theory:
                 self.update_bvars(bvar)
 
                 # add Latte formula
-                if abstraction:
-                    self.ld[bvar]=""
-                else:    
+                if mode == "wmi":            
                     self.ld[bvar]=latteformula
+                else:
+                    self.ld[bvar]=""
 
                 # add Latte weight
                 self.pwd[bvar]=weight
@@ -83,20 +82,17 @@ class Theory:
 
             else:
                 # update Theory variables
-                self.update_tvars(smtformula)
+                numtvars = self.update_tvars(smtformula)
 
-                # add Theory formula
-                formula = parse_smt2_string(smtformula, decls=self.variables)
-                print formula
-                if abstraction: 
-                    if self.get_theoryvars(smtformula): 
-                        print "theory vars with abstraction, skipping %s", formula
-                        continue
+                if not numtvars or mode == "wmi":
 
-                self.add(formula)
+                        # add Theory formula
+                        formula = parse_smt2_string(smtformula, decls=self.variables)
 
-                # add cnf formula
-                self.add_cnf_formula(formula)
+                        self.add(formula)
+
+                        # add cnf formula
+                        self.add_cnf_formula(formula)
             
         f.close()
 
@@ -112,9 +108,12 @@ class Theory:
             self.cnf2smt_varmap[cnf_id] = self.variables[bvar]
 
     def update_tvars(self, smtformula):
+        numtvars = 0
         for tvar in self.get_theoryvars(smtformula):
+            numtvars+=1
             if not self.variables.has_key(tvar):
                 self.variables[tvar] = Real(tvar)
+        return numtvars
 
     def get_theoryvars(self, formula):     
         theoryvars = set()
@@ -177,7 +176,7 @@ class Theory:
 
         self.cnf_formulas.extend(cnf_formulas)
 
-def load_data(datadir,abstraction=False):
+def load_data(datadir,mode="wmi"):
     
     problem_set={}
     
@@ -195,7 +194,7 @@ def load_data(datadir,abstraction=False):
         prefix=filename.split(".")[0]
         t = Theory()
         print "Loading problem " + filename
-        t.load(fullname,abstraction)
+        t.load(fullname,mode)
         problem_set[prefix] = t
 
     return problem_set
@@ -297,13 +296,17 @@ def approximate_volume(t,problem_name, tilt):
 if __name__ == "__main__":
 
     if len(sys.argv) < 3:
-        print "Usage: " + sys.argv[0] + " <data_dir> <tilt> <abstraction>"
+        print "Usage: " + sys.argv[0] + " <data_dir> <tilt> <wmi/wmc>"
         sys.exit(0)
 
     datadir=sys.argv[1]
     tilt=int(sys.argv[2])
-    abstraction = eval(sys.argv[3])
+    mode = sys.argv[3]
 
-    problem_set=load_data(datadir,abstraction)      
+    if not (mode == "wmi" or mode == "wmc"):
+        print "Mode should be wmi or wmc, found %s" %mode
+        sys.exit(0)
+
+    problem_set=load_data(datadir,mode)      
     solve_problem_set(problem_set,tilt,approx=True,exact=True)
 
