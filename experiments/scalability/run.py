@@ -82,17 +82,15 @@ class Theory:
 
             else:
                 # update Theory variables
-                numtvars = self.update_tvars(smtformula)
+                self.update_tvars(smtformula)
 
-                if not numtvars or mode == "wmi":
+                # add Theory formula
+                formula = parse_smt2_string(smtformula, decls=self.variables)
 
-                        # add Theory formula
-                        formula = parse_smt2_string(smtformula, decls=self.variables)
+                self.add(formula)
 
-                        self.add(formula)
-
-                        # add cnf formula
-                        self.add_cnf_formula(formula)
+                # add cnf formula
+                self.add_cnf_formula(formula)
             
         f.close()
 
