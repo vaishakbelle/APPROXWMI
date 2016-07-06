@@ -98,7 +98,11 @@ def bwsat(lines, pivot, r, wmax,t):
         
     for line in lines: 
         # check if crypto model is LRA-consistent, and get volume 
-        cons, vol = assert_and_getvol(t, line.strip('\n').strip('v '))
+        try:
+            cons, vol = assert_and_getvol(t, line.strip('\n').strip('v '))
+        except:
+            print "WARNING: no latte output found"
+            return 0, wmi, wmin*r
         #stop()
         valCount += cons
         # line 8 of algo 3
