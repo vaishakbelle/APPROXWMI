@@ -23,7 +23,7 @@ aq,,1 -1 0 0 0 0,1
 ,(assert (iff aq (<= x 1))),,-1
 ep,,1 0 0 -1 0 0,1
 ,(assert (iff ep (<= z 1))),,-1
-,(assert (and (and (and (and f2 f) a) (and (and ep aq) b)) (and (and true (and (and bs cs) c)) d))),,-1
+,(assert (and (and (and (and f2 f) a) (and (and ep aq) b)) (and (and (and bs cs) c) d))),,-1
 e,,,1
 e1,,,1
 f1,,,1
