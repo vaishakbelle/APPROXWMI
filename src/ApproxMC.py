@@ -101,7 +101,7 @@ def bwsat(lines, pivot, r, wmax,t):
         try:
             cons, vol = assert_and_getvol(t, line.strip('\n').strip('v '))
         except:
-            print "WARNING: no latte output found"
+            print "WARNING: latte integration failed, skipping model.."
             return 0, wmi, wmin*r
         #stop()
         valCount += cons
