@@ -2,5 +2,5 @@
 2) mkdir tmp 
 3) python run.py data t b
 
-where t is the tilt, e.g. 5, and b = True/False enables/disables abstraction-based counting. 
+where t is the tilt, e.g. 1, and b = wmi/wmc enables WMI/abstraction-based WMC.
 
