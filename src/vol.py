@@ -18,7 +18,6 @@ def convert_to_float(frac_str):
     except ValueError:
         try:
             num, denom = frac_str.split('/')
-        try:
             leading, num = num.split(' ')
         except ValueError:
             return float(num) / float(denom)        
