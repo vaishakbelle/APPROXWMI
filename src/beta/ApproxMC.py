@@ -338,7 +338,7 @@ def ApproxWMI(runIndex,timeout,initialFileName,numVariables,numClauses,pivot,num
     wmiMedianValue = findMedian(wmiMapList)
     wmaxMedianValue = findMedian(wmaxMapList)
 
-    return medianValue*pow(2,minHashCount), wmiMedianValue*pow(2,minHashCount), wmaxMedianValue*pow(2,minHashCount)
+    return medianValue*pow(2,minHashCount), wmiMedianValue*pow(2,minHashCount), wmaxMedianValue #*pow(2,minHashCount)
 
 #returns action(int),error(string),paramMap(dict) where 
 #action=0 -> help asked (-h) was supplied show usage menu
