@@ -1,0 +1,1 @@
+An implementation of Algorithm 3 using block-clause via the SMT solver (instead of cryptominisat)
