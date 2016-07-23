@@ -269,7 +269,7 @@ def approximate_volume(t,problem_name, tilt):
             numClauses = int(fields[3])
             break
     initialFileNameSuffix =  initialFileName.split('/')[-1][:-4]
-    finalFileName = TMPDIR+"/inputFiles/input_"+str(initialFileNameSuffix)+'_'+str(runIndex)+".cnf"
+    # finalFileName = TMPDIR+"/inputFiles/input_"+str(initialFileNameSuffix)+'_'+str(runIndex)+".cnf"
     # ApproxMC global vars
     init()
 
@@ -284,8 +284,8 @@ def approximate_volume(t,problem_name, tilt):
     # # exact
     # print 'Exact WMI is ' + str(volume(t.s,t.pwd,t.ld,t.bounds,t.dvars))
     # approx
-    CountEstimate, wmi, wmax = ApproxWMI(runIndex, timeout, initialFileName, numVariables, numClauses, pivot, numIterations, tilt, shouldLog,logFileName,finalFileName,initialFileNameSuffix, t)
-    os.system('rm '+finalFileName)
+    CountEstimate, wmi, wmax = ApproxWMI(runIndex, timeout, initialFileName, numVariables, numClauses, pivot, numIterations, tilt, shouldLog,logFileName,initialFileNameSuffix, t)
+    # os.system('rm '+finalFileName)
     # print results
     OutputResult(epsilon,delta, CountEstimate, wmi, wmax, outputFileName)
     print "done computing approx WMI"

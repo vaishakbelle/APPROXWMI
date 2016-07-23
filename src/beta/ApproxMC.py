@@ -88,15 +88,15 @@ def init():
 
 ''' compute BoundedWeightSat given formula (i.e. o/p of cryptominisat), r, wmax'''
 
-def bwsat(fileName, pivot, r, wmax,t): 
+def bwsat(hashClauses, pivot, r, wmax,t): 
     
     # min. model weight 
     wmin = float(wmax/r)
         
-    # read hash clause file  
-    f = open(fileName,'r')
-    lines = f.readlines()
-    f.close()
+    # read hash clause   
+    #f = open(fileName,'r')
+    lines = hashClauses #f.readlines()
+    #f.close()
 
     print "xor clauses", lines
 
@@ -144,8 +144,8 @@ def bwsat(fileName, pivot, r, wmax,t):
 # Returns 0 when its solvable, 1 when number of solutions are larger than maxSolutions, 2 when timeout occurs,3 
 # @v: returns model count and wmi as well 
 # @v: input send solver instance 
-def WMICore(fileName, numVariables, maxSolutions, tilt, wmax, timeout,runIndex,hashCount,fileNameSuffix, t):
-    global TMPDIR
+def WMICore(hashClauses, numVariables, maxSolutions, tilt, wmax, timeout,runIndex,hashCount,fileNameSuffix, t):
+    # global TMPDIR
     wmi = 0
     # outputFileName = TMPDIR+"/res_"+str(fileNameSuffix)+"_"+str(runIndex)+"_"+str(numVariables)+'_'+str(hashCount)+".txt"
     # noSolutions = True
@@ -182,7 +182,7 @@ def WMICore(fileName, numVariables, maxSolutions, tilt, wmax, timeout,runIndex,h
     #     if (lines[0].strip() == noSolStr):
     #         return 3,0
 
-    valCount, wmi, wmax = bwsat(fileName, maxSolutions, tilt, wmax,t)
+    valCount, wmi, wmax = bwsat(hashClauses, maxSolutions, tilt, wmax,t)
 
     # if (not(noSolutions) and valCount!=0):
     #     if (lines[len(lines)-1].strip() ==  noSolStr):
@@ -227,12 +227,13 @@ def findMin(numList):
             min = int(ele)
     return min
 # This will add hash to the initial File with numHash of XOR clauses! 
-def addHash(initialFileName,finalFileName,numVariables,numClauses,numHash):
-    hashClauses = ''
+def addHash(numVariables,numClauses,numHash):
+    hashClauses = []
     for i in range(int(numHash)):
+        hashClause = ''
         varNum = 0
         randBits = findHashBits(numVariables,numHash)
-        hashClauses = hashClauses+'x'
+        hashClause = hashClause+'x'
         needToNegate = False
         if (randBits[0] == '1'):
             needToNegate = True
@@ -240,26 +241,28 @@ def addHash(initialFileName,finalFileName,numVariables,numClauses,numHash):
             if (randBits[j] == '1'):
                 varNum = varNum+1
                 if (needToNegate):
-                    hashClauses = hashClauses+'-'
+                    hashClause = hashClause+'-'
                     needToNegate = False
-                hashClauses = hashClauses+str(j)+' '
-        hashClauses = hashClauses+' 0\n'
+                hashClause = hashClause+str(j)+' '
+        hashClause = hashClause+' 0'
+        hashClauses.append(hashClause)
     # f = open(initialFileName,'r')
     # lines = f.readlines()
     # f.close()
-    f = open(finalFileName,'w')
-    # f.write('p cnf '+str(numVariables)+' '+str(numClauses+numHash)+'\n')
-    # not saving as a dimancs cnf  
-    # f.write('p cnf '+str(numVariables)+' '+str(numHash)+'\n')
-    # for line in lines:
-    #     f.write(str(line.strip())+'\n')
-    if (numHash > 0):
-        f.write(hashClauses)
-    f.close()
+    return hashClauses
+    # f = open(finalFileName,'w')
+    # # f.write('p cnf '+str(numVariables)+' '+str(numClauses+numHash)+'\n')
+    # # not saving as a dimancs cnf  
+    # # f.write('p cnf '+str(numVariables)+' '+str(numHash)+'\n')
+    # # for line in lines:
+    # #     f.write(str(line.strip())+'\n')
+    # if (numHash > 0):
+    #     f.write(hashClauses)
+    # f.close()
     
     
 # Implementation of ApproxWMI with leapfrogging (the leapfrogging call can be improved)
-def ApproxWMI(runIndex,timeout,initialFileName,numVariables,numClauses,pivot,numIterations, tilt, shouldLog,logFileName,finalFileName,initialFileNameSuffix, t):
+def ApproxWMI(runIndex,timeout,initialFileName,numVariables,numClauses,pivot,numIterations, tilt, shouldLog,logFileName,initialFileNameSuffix, t):
 
     global fileaddOfRandom,fileaddOfRandPickTable
     f = open(initialFileName,'r')
@@ -287,8 +290,8 @@ def ApproxWMI(runIndex,timeout,initialFileName,numVariables,numClauses,pivot,num
         while((rat >  maxSolutions) and (hashCount < numVariables)):
             startTime = time.time()
             # line 9 of algo 2: HXOR(n,i)
-            addHash(initialFileName,finalFileName,numVariables,numClauses,hashCount)
-            isSolvable, totalSolutions, wmi, wmax = WMICore(finalFileName,numVariables,maxSolutions,tilt, wmax, timeout,runIndex,hashCount,initialFileNameSuffix, t) 
+            hashClauses = addHash(numVariables,numClauses,hashCount)
+            isSolvable, totalSolutions, wmi, wmax = WMICore(hashClauses,numVariables,maxSolutions,tilt, wmax, timeout,runIndex,hashCount,initialFileNameSuffix, t) 
             endTime = time.time()
             timeDiff = endTime-startTime
             logStr = 'ApproxWMI:'+str(i)+':'+str(hashCount)+':'+str(timeDiff)+':'+str(isSolvable)+'\n'
@@ -463,7 +466,7 @@ def main():
         writeStr = 'ApproxWMI:iteration:hashCount:time:isSolvable\n'
         g.write(writeStr)
         g.close()
-    finalFileName = TMPDIR+"/inputFiles/input_"+str(initialFileNameSuffix)+'_'+str(runIndex)+".cnf"
+    # finalFileName = TMPDIR+"/inputFiles/input_"+str(initialFileNameSuffix)+'_'+str(runIndex)+".cnf"
     init()
     pivot = 2*math.ceil(4.4817*(1+1/epsilon)*(1+1/epsilon)) 
     numIterations = FindFromTable(1-delta)
@@ -482,8 +485,8 @@ def main():
     tcopy = csv_theory()
     start_time = time.time()
     # computed medians of model count, wmi, and wmax
-    CountEstimate, wmi, wmax = ApproxWMI(runIndex, timeout, initialFileName, numVariables, numClauses, pivot, numIterations, tilt, shouldLog,logFileName,finalFileName,initialFileNameSuffix, tcopy)
-    os.system('rm '+finalFileName)
+    CountEstimate, wmi, wmax = ApproxWMI(runIndex, timeout, initialFileName, numVariables, numClauses, pivot, numIterations, tilt, shouldLog,logFileName,initialFileNameSuffix, tcopy)
+    # os.system('rm '+finalFileName)
     # print results
     OutputResult(epsilon,delta, CountEstimate, wmi, wmax, outputFileName)
     end_time = time.time()
