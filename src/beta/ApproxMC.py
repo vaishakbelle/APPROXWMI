@@ -336,7 +336,7 @@ def ApproxWMI(runIndex,timeout,initialFileName,numVariables,numClauses,pivot,num
     for i in range(len(hashCountList)):
         resultMapList.append(pow(2,hashCountList[i]-minHashCount)*totalSolList[i])
         wmiMapList.append(pow(2,hashCountList[i]-minHashCount)*wmiSolList[i])
-        wmaxMapList.append(pow(2,hashCountList[i]-minHashCount)*wmaxSolList[i])
+        wmaxMapList.append(wmaxSolList[i]) #pow(2,hashCountList[i]-minHashCount)*wmaxSolList[i]
     medianValue = findMedian(resultMapList)
     wmiMedianValue = findMedian(wmiMapList)
     wmaxMedianValue = findMedian(wmaxMapList)
