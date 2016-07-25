@@ -91,7 +91,7 @@ def assert_and_getvol(t, model):
             else: 
                 s.add(varmap[abs(key)+offset] == False)
     
-    print 'current smt theory is ' +  str(s)
+    #print 'current smt theory is ' +  str(s)
     if (s.check() == sat):
         return 1, volume_model(s, t.pwd, t.ld, t.bounds, t.dvars)
     else: 
@@ -192,8 +192,8 @@ def volume_mc(s, pwd, ld, bounds, dvars):
 
     while s.check() == sat:
 
-        print "curr model" 
-        print s.model() 
+        #print "curr model" 
+        #print s.model() 
                 
         currentweight = 1.0
         dimB = 0 # dim. of B matrix

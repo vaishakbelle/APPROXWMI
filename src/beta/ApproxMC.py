@@ -96,7 +96,7 @@ def bwsat(hashClauses, pivot, r, wmax,t):
     # read hash clause   
     lines = hashClauses 
 
-    print "xor clauses", lines
+    # print "xor clauses", lines
 
     # read assertions from hash clause 
     # 1. get assertions from theory var 
