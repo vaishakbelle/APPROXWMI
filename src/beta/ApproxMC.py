@@ -94,9 +94,7 @@ def bwsat(hashClauses, pivot, r, wmax,t):
     wmin = float(wmax/r)
         
     # read hash clause   
-    #f = open(fileName,'r')
-    lines = hashClauses #f.readlines()
-    #f.close()
+    lines = hashClauses 
 
     print "xor clauses", lines
 
@@ -145,49 +143,9 @@ def bwsat(hashClauses, pivot, r, wmax,t):
 # @v: returns model count and wmi as well 
 # @v: input send solver instance 
 def WMICore(hashClauses, numVariables, maxSolutions, tilt, wmax, timeout,runIndex,hashCount,fileNameSuffix, t):
-    # global TMPDIR
     wmi = 0
-    # outputFileName = TMPDIR+"/res_"+str(fileNameSuffix)+"_"+str(runIndex)+"_"+str(numVariables)+'_'+str(hashCount)+".txt"
-    # noSolutions = True
-    # cmd = ''
-
-    # noSolStr = 's UNSATISFIABLE'
-    
-    
-    # howMany = pow(2,numVariables) 
-
-    # if (noSolutions):
-    #     noSolStr = 'c UNSATISFIABLE'
-    #     cmd = "./doalarm -t profile "+str(timeout)+" ./cryptominisat --gaussuntil=400 --maxsolutions="+str(howMany)+" --verbosity=0 "+str(fileName)+"| grep \"v \""+" > "+str(outputFileName) 
-    # else:
-    #     cmd = "./doalarm -t profile "+str(timeout)+" ./cryptominisat --gaussuntil=400 --maxsolutions="+str(howMany)+" --verbosity=0 "+str(fileName)+" > "+str(outputFileName)
-    # starttime = time.time()
-    # #print cmd
-    # os.system(cmd)
-    # endtime = time.time()
-    # #sometimes the times are off, so just additional sanity check
-    # if (endtime-starttime >timeout-10):
-    #     return 2,0
-    # res = []
-    # f = open(outputFileName,'r')
-    # lines = f.readlines()
-    # f.close()
-    # os.system('rm '+outputFileName)
-
-    # if (lines!=[]):
-    #     res = lines[len(lines)-1]
-    #     #When timeout occurs
-    #     if (res.strip() == 'Alarm clock: 14'):
-    #         return 2,0
-    #     if (lines[0].strip() == noSolStr):
-    #         return 3,0
 
     valCount, wmi, wmax = bwsat(hashClauses, maxSolutions, tilt, wmax,t)
-
-    # if (not(noSolutions) and valCount!=0):
-    #     if (lines[len(lines)-1].strip() ==  noSolStr):
-    #         valCount= valCount-1
-    #     valCount = valCount/2
     
     if (wmi / wmax) > maxSolutions: # volume larger than threshold
         return 1, 0, wmi, wmax
@@ -246,19 +204,7 @@ def addHash(numVariables,numClauses,numHash):
                 hashClause = hashClause+str(j)+' '
         hashClause = hashClause+' 0'
         hashClauses.append(hashClause)
-    # f = open(initialFileName,'r')
-    # lines = f.readlines()
-    # f.close()
     return hashClauses
-    # f = open(finalFileName,'w')
-    # # f.write('p cnf '+str(numVariables)+' '+str(numClauses+numHash)+'\n')
-    # # not saving as a dimancs cnf  
-    # # f.write('p cnf '+str(numVariables)+' '+str(numHash)+'\n')
-    # # for line in lines:
-    # #     f.write(str(line.strip())+'\n')
-    # if (numHash > 0):
-    #     f.write(hashClauses)
-    # f.close()
     
     
 # Implementation of ApproxWMI with leapfrogging (the leapfrogging call can be improved)
