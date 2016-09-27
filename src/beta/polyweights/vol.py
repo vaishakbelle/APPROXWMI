@@ -325,13 +325,10 @@ def csv_theory():
 
 
 
-def main():
-
-
+if __name__ == "__main__":
     t = csv_theory()
     start_time = time.time()
     print 'Exact (MC, WMI) is ' + str(volume_mc(t.s,t.pwd,t.ld,t.bounds,t.dvars))
     end_time = time.time()
     print("Elapsed time was %g seconds" % (end_time - start_time))
 
-main()
