@@ -1,1 +1,1 @@
-A naive experimental implementation of all-sat wrt cryptominisat
+Attempting to call all-sat using cryptominisat by providing max model count
