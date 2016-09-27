@@ -1,0 +1,5 @@
+A sample instantiation of hybrid weights, i.e. weights of atoms can be numbers or Latte polynomials. 
+
+To test, do e.g. 
+1) cp hybridweights/data.csv . 
+2) python vol.py 
