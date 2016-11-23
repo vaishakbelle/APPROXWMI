@@ -226,7 +226,7 @@ def ApproxWMI(runIndex,timeout,initialFileName,numVariables,numClauses,pivot,num
     wmiSolList = []
     wmaxSolList = []
     # initialize wmax to large number if weights are not normalized
-    wmax = 2.0e+15   
+    wmax = sys.maxint
     wmi = 0
     for i in range(numIterations):
         isSolvable = 2
