@@ -9,7 +9,13 @@ import csv
 import sys 
 import subprocess 
 import time 
+import re
 
+def get_volume(buf):
+    match=re.search("Decimal: ([^\n]*)\n",buf)
+    if not match:
+	raise Exception("Cannot parse integrate output")
+    return float(match.group(1))		
 
 '''convert (latte) fraction to float'''
 def convert_to_float(frac_str):
@@ -161,18 +167,11 @@ def volume_model(s, pwd, ld, bounds, dvars):
         else:    
             args = ("integrate", "--valuation=volume", "--triangulate", "model.hrep.latte")
 
-        popen = subprocess.Popen(args, stdout=subprocess.PIPE)
-        popen.wait()
+        strout = subprocess.check_output(args)
+	currentvolume = get_volume(strout)
+        print 'current volume is %f' %currentvolume
+        currentweight *= currentvolume 
 
-        # extract answer from latte output
-        grepargs = ("grep", "Answer")
-        answer = subprocess.Popen(grepargs, stdin=popen.stdout, stdout=subprocess.PIPE)
-        popen.stdout.close()
-        output = answer.stdout.read()
-        currentvolume = output.replace("Answer:","").strip('\n')
-        print 'current volume is ' + currentvolume
-        currentweight *= convert_to_float(currentvolume)
-        
     return currentweight
 
     
@@ -261,19 +260,13 @@ def volume_mc(s, pwd, ld, bounds, dvars):
                 args = ("integrate", "--valuation=integrate", "--product-linear-forms=model.polynomial", "model.hrep.latte")
             else:    
                 args = ("integrate", "--valuation=volume", "--triangulate", "model.hrep.latte")
-            
-            popen = subprocess.Popen(args, stdout=subprocess.PIPE)
-            popen.wait()
+           
 
-            # extract answer from latte output
-            grepargs = ("grep", "Answer")
-            answer = subprocess.Popen(grepargs, stdin=popen.stdout, stdout=subprocess.PIPE)
-            popen.stdout.close()
-            output = answer.stdout.read()
-            currentvolume = output.replace("Answer:","").strip('\n')
-            print 'current volume is ' + currentvolume
-            currentweight *= convert_to_float(currentvolume)
-        
+            strout = subprocess.check_output(args)
+            currentvolume = get_volume(strout)
+            print 'current volume is %f' %currentvolume
+            currentweight *= currentvolume
+       
         modelweight += currentweight
 
         # discard model 
@@ -372,19 +365,12 @@ def bounded_wmi(s, pwd, ld, bounds, dvars, pivot, tilt, wmax, wmin):
                 args = ("integrate", "--valuation=integrate", "--product-linear-forms=model.polynomial", "model.hrep.latte")
             else:    
                 args = ("integrate", "--valuation=volume", "--triangulate", "model.hrep.latte")
-            
-            popen = subprocess.Popen(args, stdout=subprocess.PIPE)
-            popen.wait()
-
-            # extract answer from latte output
-            grepargs = ("grep", "Answer")
-            answer = subprocess.Popen(grepargs, stdin=popen.stdout, stdout=subprocess.PIPE)
-            popen.stdout.close()
-            output = answer.stdout.read()
-            currentvolume = output.replace("Answer:","").strip('\n')
-            print 'current volume is ' + currentvolume
-            currentweight *= convert_to_float(currentvolume)
-        
+           
+            strout = subprocess.check_output(args)
+            currentvolume = get_volume(strout)
+            print 'current volume is %f' %currentvolume
+            currentweight *= currentvolume
+       
         modelweight += currentweight
 
         if (currentweight !=0): 
@@ -489,17 +475,10 @@ def volume(s, pwd, ld, bounds, dvars):
             else:    
                 args = ("integrate", "--valuation=volume", "--triangulate", "model.hrep.latte")
             
-            popen = subprocess.Popen(args, stdout=subprocess.PIPE)
-            popen.wait()
-
-            # extract answer from latte output
-            grepargs = ("grep", "Answer")
-            answer = subprocess.Popen(grepargs, stdin=popen.stdout, stdout=subprocess.PIPE)
-            popen.stdout.close()
-            output = answer.stdout.read()
-            currentvolume = output.replace("Answer:","").strip('\n')
-            print 'current volume is ' + currentvolume
-            currentweight *= convert_to_float(currentvolume)
+            strout = subprocess.check_output(args)
+	    currentvolume = get_volume(strout)
+            print 'current volume is %f' %currentvolume
+            currentweight *= currentvolume 
         
         modelweight += currentweight
 
