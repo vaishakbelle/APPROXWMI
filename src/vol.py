@@ -11,6 +11,16 @@ import subprocess
 import time 
 import re
 
+def run_integrate(args):
+    max_attempts = 5
+    attempts = 0
+    while (attempts < max_attempts):
+        try:
+            return subprocess.check_output(args)
+        except subprocess.CalledProcessError:
+	    attempts+=1
+    raise Exception("Maximum number of attempts in running integrate reached")
+
 def get_volume(buf):
     match=re.search("Decimal: ([^\n]*)\n",buf)
     if not match:
@@ -167,7 +177,7 @@ def volume_model(s, pwd, ld, bounds, dvars):
         else:    
             args = ("integrate", "--valuation=volume", "--triangulate", "model.hrep.latte")
 
-        strout = subprocess.check_output(args)
+        strout = run_integrate(args)
 	currentvolume = get_volume(strout)
         print 'current volume is %f' %currentvolume
         currentweight *= currentvolume 
@@ -262,7 +272,7 @@ def volume_mc(s, pwd, ld, bounds, dvars):
                 args = ("integrate", "--valuation=volume", "--triangulate", "model.hrep.latte")
            
 
-            strout = subprocess.check_output(args)
+            strout = run_integrate(args)
             currentvolume = get_volume(strout)
             print 'current volume is %f' %currentvolume
             currentweight *= currentvolume
@@ -365,8 +375,9 @@ def bounded_wmi(s, pwd, ld, bounds, dvars, pivot, tilt, wmax, wmin):
                 args = ("integrate", "--valuation=integrate", "--product-linear-forms=model.polynomial", "model.hrep.latte")
             else:    
                 args = ("integrate", "--valuation=volume", "--triangulate", "model.hrep.latte")
-           
-            strout = subprocess.check_output(args)
+    
+                   
+            strout = run_integrate(args)
             currentvolume = get_volume(strout)
             print 'current volume is %f' %currentvolume
             currentweight *= currentvolume
@@ -475,7 +486,7 @@ def volume(s, pwd, ld, bounds, dvars):
             else:    
                 args = ("integrate", "--valuation=volume", "--triangulate", "model.hrep.latte")
             
-            strout = subprocess.check_output(args)
+            strout = run_integrate(args)
 	    currentvolume = get_volume(strout)
             print 'current volume is %f' %currentvolume
             currentweight *= currentvolume 
